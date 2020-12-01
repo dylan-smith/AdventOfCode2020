@@ -120,11 +120,14 @@ namespace AdventOfCode
 
         public static IEnumerable<IEnumerable<T>> GetCombinations<T>(this IEnumerable<T> source, int length)
         {
-            var result = new List<List<T>>();
-
             if (length == 1)
             {
-                return source.Select(x => new List<T>(1) { x });
+                foreach (var x in source)
+                {
+                    yield return new List<T>(1) { x };
+                }
+
+                yield break;
             }
 
             for (var i = 0; i < source.Count(); i++)
@@ -138,11 +141,10 @@ namespace AdventOfCode
                     var newCombo = new List<T>(length);
                     newCombo.Add(source.ElementAt(i));
                     newCombo.AddRange(c);
-                    result.Add(newCombo);
+                    
+                    yield return newCombo;
                 }
             }
-
-            return result;
         }
 
         private static void Swap<T>(ref T a, ref T b)
