@@ -8,7 +8,7 @@ namespace AdventOfCode.Days
     {
         public override string PartOne(string input)
         {
-            var passwords = input.Lines().Select(ParseInput);
+            var passwords = input.ParseLines(ParseInput);
 
             return passwords.Count(IsPasswordValid1).ToString();
         }
@@ -42,7 +42,7 @@ namespace AdventOfCode.Days
 
         public override string PartTwo(string input)
         {
-            var passwords = input.Lines().Select(ParseInput);
+            var passwords = input.ParseLines(ParseInput);
 
             return passwords.Count(IsPasswordValid2).ToString();
         }

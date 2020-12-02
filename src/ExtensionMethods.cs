@@ -288,6 +288,11 @@ namespace AdventOfCode
             return input.Words().Select(x => double.Parse(x)).ToList();
         }
 
+        public static IEnumerable<T> ParseLines<T>(this string input, Func<string, T> parser)
+        {
+            return input.Lines().Select(parser);
+        }
+
         public static bool IsAnagram(this string a, string b)
         {
             return a.ToCharArray().UnorderedEquals(b.ToCharArray());
