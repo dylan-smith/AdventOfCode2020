@@ -30,6 +30,7 @@ namespace AdventOfCode.Days
 
         private (int min, int max, char letter, string password) ParseInput(string input)
         {
+            // 6-12 k: kqkwkktfbklkjnkqrtmb
             var segments = input.Split(new char[] { '-', ' ', ':' }, StringSplitOptions.RemoveEmptyEntries);
 
             var min = int.Parse(segments[0]);
