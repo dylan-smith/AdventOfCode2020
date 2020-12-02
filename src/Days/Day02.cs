@@ -25,7 +25,7 @@ namespace AdventOfCode.Days
             var first = input.password[input.min - 1] == input.letter;
             var second = input.password[input.max - 1] == input.letter;
 
-            return (first || second) && !(first && second);
+            return first ^ second;
         }
 
         private (int min, int max, char letter, string password) ParseInput(string input)
