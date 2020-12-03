@@ -10,7 +10,7 @@ namespace AdventOfCode.Days
             var entries = input.Integers().OrderBy(x => x).ToList();
             var result = entries.GetCombinations(2).First(c => c.Sum() == 2020);
 
-            return (result.First() * result.Last()).ToString();
+            return result.Multiply().ToString();
         }
 
         public override string PartTwo(string input)
@@ -18,7 +18,7 @@ namespace AdventOfCode.Days
             var entries = input.Integers().OrderBy(x => x).ToList();
             var result = entries.GetCombinations(3).First(c => c.Sum() == 2020).ToList();
 
-            return (result[0] * result[1] * result[2]).ToString();
+            return result.Multiply().ToString();
         }
     }
 }
