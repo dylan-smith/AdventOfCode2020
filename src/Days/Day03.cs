@@ -16,8 +16,9 @@
             var y = down;
             var count = 0L;
             var width = grid.GetUpperBound(0) + 1;
+            var height = grid.GetUpperBound(1) + 1;
 
-            while (y <= grid.GetUpperBound(1))
+            while (y < height)
             {
                 x %= width;
 
