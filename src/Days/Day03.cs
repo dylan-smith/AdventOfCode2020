@@ -1,4 +1,7 @@
-﻿namespace AdventOfCode.Days
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace AdventOfCode.Days
 {
     [Day(2020, 3)]
     public class Day03 : BaseDay
@@ -33,14 +36,11 @@
         public override string PartTwo(string input)
         {
             var grid = input.CreateCharGrid();
+            var slopes = new (int x, int y)[] { (1, 1), (3, 1), (5, 1), (7, 1), (1, 2) };
+            
+            var trees = slopes.Select(slope => CountTrees(grid, slope.x, slope.y));
 
-            var a = CountTrees(grid, 1, 1);
-            var b = CountTrees(grid, 3, 1);
-            var c = CountTrees(grid, 5, 1);
-            var d = CountTrees(grid, 7, 1);
-            var e = CountTrees(grid, 1, 2);
-
-            return (a * b * c * d * e).ToString();
+            return trees.Multiply().ToString();
         }
     }
 }

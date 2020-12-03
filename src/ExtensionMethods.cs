@@ -688,6 +688,16 @@ namespace AdventOfCode
             return -1;
         }
 
+        public static long Multiply(this IEnumerable<long> list)
+        {
+            return list.Aggregate(1L, (acc, x) => acc * x);
+        }
+
+        public static int Multiply(this IEnumerable<int> list)
+        {
+            return list.Aggregate(1, (acc, x) => acc * x);
+        }
+
         public static T WithMin<T>(this IEnumerable<T> a, Func<T, int> selector)
         {
             var min = a.Min(selector);
