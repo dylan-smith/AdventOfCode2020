@@ -12,21 +12,21 @@
 
         private long CountTrees(char[,] grid, int right, int down)
         {
-            var x = 0;
-            var y = 0;
+            var x = right;
+            var y = down;
             var count = 0L;
 
-            while (y < grid.GetUpperBound(1))
+            while (y <= grid.GetUpperBound(1))
             {
-                x += right;
-                y += down;
-
                 x %= grid.GetUpperBound(0) + 1;
 
                 if (grid[x, y] == '#')
                 {
                     count++;
                 }
+
+                x += right;
+                y += down;
             }
 
             return count;
