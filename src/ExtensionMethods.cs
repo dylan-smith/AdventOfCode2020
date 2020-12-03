@@ -1267,6 +1267,21 @@ namespace AdventOfCode
                 yield return grid.GetRow(y);
             }
         }
+
+        public static int Width<T>(this T[,] grid)
+        {
+            return grid.GetUpperBound(0) + 1;
+        }
+
+        public static int Height<T>(this T[,] grid)
+        {
+            return grid.GetUpperBound(1) + 1;
+        }
+
+        public static char GetCharWithWrapping(this char[,] grid, int x, int y)
+        {
+            return grid[x % grid.Width(), y % grid.Height()];
+        }
     }
 
     public static class NumericExtensions

@@ -15,14 +15,10 @@
             var x = right;
             var y = down;
             var count = 0L;
-            var width = grid.GetUpperBound(0) + 1;
-            var height = grid.GetUpperBound(1) + 1;
 
-            while (y < height)
+            while (y < grid.Height())
             {
-                x %= width;
-
-                if (grid[x, y] == '#')
+                if (grid.GetCharWithWrapping(x, y) == '#')
                 {
                     count++;
                 }
