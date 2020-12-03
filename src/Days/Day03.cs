@@ -15,10 +15,11 @@
             var x = right;
             var y = down;
             var count = 0L;
+            var width = grid.GetUpperBound(0) + 1;
 
             while (y <= grid.GetUpperBound(1))
             {
-                x %= grid.GetUpperBound(0) + 1;
+                x %= width;
 
                 if (grid[x, y] == '#')
                 {
