@@ -11,7 +11,7 @@ namespace AdventOfCode.Days
         {
             var passports = input.Paragraphs().Select(ParsePassport);
 
-            return passports.Count(p => HasAllFields(p)).ToString();
+            return passports.Count(HasAllFields).ToString();
         }
 
         private Dictionary<string, string> ParsePassport(string input)
@@ -42,7 +42,7 @@ namespace AdventOfCode.Days
         {
             var passports = input.Paragraphs().Select(ParsePassport);
 
-            return passports.Count(p => IsValidPassport(p)).ToString();
+            return passports.Count(IsValidPassport).ToString();
         }
 
         private bool IsValidPassport(Dictionary<string, string> passport)
