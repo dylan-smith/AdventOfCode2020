@@ -268,6 +268,11 @@ namespace AdventOfCode
             return input.Split(new string[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public static IEnumerable<string> Paragraphs(this string input)
+        {
+            return input.Split(new string[] { $"{Environment.NewLine}{Environment.NewLine}", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public static IEnumerable<string> Words(this string input)
         {
             return input.Split(new string[] { " ", "\t", Environment.NewLine, ",", "\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -296,6 +301,19 @@ namespace AdventOfCode
         public static bool IsAnagram(this string a, string b)
         {
             return a.ToCharArray().UnorderedEquals(b.ToCharArray());
+        }
+
+        public static bool IsHex(this string input)
+        {
+            foreach (var c in input)
+            {
+                if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static string ShaveLeft(this string a, int characters)
