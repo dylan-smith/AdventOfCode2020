@@ -20,7 +20,7 @@ namespace AdventOfCode.Days
 
         public override string PartTwo(string input)
         {
-            var seats = input.Lines().Select(CalcSeatId).OrderBy(x => x).ToList();
+            var seats = input.ParseLines(CalcSeatId).OrderBy(x => x).ToList();
 
             for (var i = 1; i < seats.Count; i++)
             {
