@@ -18,14 +18,11 @@ namespace AdventOfCode.Days
         {
             var passport = new Dictionary<string, string>();
 
-            foreach (var line in input.Lines())
+            foreach (var word in input.Words())
             {
-                foreach (var word in line.Words())
-                {
-                    var fields = word.Split(':');
+                var fields = word.Split(':');
 
-                    passport.Add(fields[0], fields[1]);
-                }
+                passport.Add(fields[0], fields[1]);
             }
 
             return passport;
