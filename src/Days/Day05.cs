@@ -14,13 +14,8 @@ namespace AdventOfCode.Days
 
         private int CalcSeatId(string input)
         {
-            var rowInput = input.Substring(0, 7).Replace('F', '0').Replace('B', '1');
-            var colInput = input.Substring(7).Replace('L', '0').Replace('R', '1');
-
-            var row = Convert.ToInt32(rowInput, 2);
-            var col = Convert.ToInt32(colInput, 2);
-
-            return row * 8 + col;
+            var binary = input.Replace('F', '0').Replace('B', '1').Replace('L', '0').Replace('R', '1');
+            return Convert.ToInt32(binary, 2);
         }
 
         public override string PartTwo(string input)
