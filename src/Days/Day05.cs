@@ -14,60 +14,24 @@ namespace AdventOfCode.Days
 
         private int CalcSeatId(string input)
         {
-            return GetRow(input.Substring(0, 7)) * 8 + GetColumn(input.Substring(7));
-        }
+            var rowInput = input.Substring(0, 7).Replace('F', '0').Replace('B', '1');
+            var colInput = input.Substring(7).Replace('L', '0').Replace('R', '1');
 
-        private int GetRow(string input)
-        {
-            var min = 0;
-            var max = 127;
+            var row = Convert.ToInt32(rowInput, 2);
+            var col = Convert.ToInt32(colInput, 2);
 
-            foreach (var c in input)
-            {
-                if (c == 'F')
-                {
-                    max -= (max - min + 1) / 2;
-                }
-
-                if (c == 'B')
-                {
-                    min += (max - min + 1) / 2;
-                }
-            }
-
-            return min;
-        }
-
-        private int GetColumn(string input)
-        {
-            var min = 0;
-            var max = 8;
-
-            foreach (var c in input)
-            {
-                if (c == 'L')
-                {
-                    max -= (max - min + 1) / 2;
-                }
-
-                if (c == 'R')
-                {
-                    min += (max - min + 1) / 2;
-                }
-            }
-
-            return min;
+            return row * 8 + col;
         }
 
         public override string PartTwo(string input)
         {
             var seats = input.Lines().Select(CalcSeatId).OrderBy(x => x).ToList();
 
-            for (var i = 0; i < seats.Count; i++)
+            for (var i = 1; i < seats.Count; i++)
             {
-                if (seats[i] != seats[0] + i)
+                if (seats[i] != seats[i - 1] + 1)
                 {
-                    return (seats[0] + i).ToString();
+                    return (seats[i] - 1).ToString();
                 }
             }
 
