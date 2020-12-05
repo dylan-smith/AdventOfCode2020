@@ -8,7 +8,7 @@ namespace AdventOfCode.Days
     {
         public override string PartOne(string input)
         {
-            return input.Lines().Max(x => CalcSeatId(x)).ToString();
+            return input.Lines().Max(CalcSeatId).ToString();
         }
 
         private int CalcSeatId(string input)
