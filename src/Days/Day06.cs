@@ -18,7 +18,7 @@ namespace AdventOfCode.Days
 
         private int CountQuestionsWithAnyYesAnswers(string group)
         {
-            return _questions.Count(c => group.Contains(c));
+            return group.RemoveWhitespace().Distinct().Count();
         }
 
         private int CountQuestionsWithAllYesAnswers(string group)

@@ -298,6 +298,11 @@ namespace AdventOfCode
             return input.Lines().Select(parser);
         }
 
+        public static string RemoveWhitespace(this string input)
+        {
+            return input.Strip("\n", Environment.NewLine, " ", "\t");
+        }
+
         public static bool IsAnagram(this string a, string b)
         {
             return a.ToCharArray().UnorderedEquals(b.ToCharArray());
