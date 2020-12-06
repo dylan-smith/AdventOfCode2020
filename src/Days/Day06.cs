@@ -7,8 +7,6 @@ namespace AdventOfCode.Days
     [Day(2020, 6)]
     public class Day06 : BaseDay
     {
-        private string _questions = "abcdefghijklmnopqrstuvwxyz";
-
         public override string PartOne(string input)
         {
             var result = input.Paragraphs().Sum(CountQuestionsWithAnyYesAnswers);
@@ -24,8 +22,9 @@ namespace AdventOfCode.Days
         private int CountQuestionsWithAllYesAnswers(string group)
         {
             var people = group.Lines().ToList();
+            var questions = group.RemoveWhitespace().Distinct().ToList();
 
-            return _questions.Count(q => people.All(p => p.Contains(q)));
+            return questions.Count(q => people.All(p => p.Contains(q)));
         }
 
         public override string PartTwo(string input)
