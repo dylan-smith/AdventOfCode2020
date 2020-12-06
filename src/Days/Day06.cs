@@ -7,62 +7,32 @@ namespace AdventOfCode.Days
     [Day(2020, 6)]
     public class Day06 : BaseDay
     {
+        private string _questions = "abcdefghijklmnopqrstuvwxyz";
+
         public override string PartOne(string input)
         {
-            var groups = input.Paragraphs().Select(p => CountYesAnswers(p)).Sum();
+            var result = input.Paragraphs().Sum(CountQuestionsWithAnyYesAnswers);
 
-            return groups.ToString();
+            return result.ToString();
         }
 
-        private int CountYesAnswers(string group)
+        private int CountQuestionsWithAnyYesAnswers(string group)
         {
-            var questions = new HashSet<char>();
-            foreach (var c in group)
-            {
-                if (c != '\n' && c != '\r')
-                {
-                    questions.Add(c);
-                }
-            }
-
-            return questions.Count();
+            return _questions.Count(c => group.Contains(c));
         }
 
-        private int CountYesAnswers2(string group)
+        private int CountQuestionsWithAllYesAnswers(string group)
         {
-            var questions = new HashSet<char>();
+            var people = group.Lines().ToList();
 
-            foreach (var c in group)
-            {
-                if (c != '\n' && c != '\r')
-                {
-                    questions.Add(c);
-                }
-            }
-
-            foreach (var line in group.Lines())
-            {
-                var goodQuestions = new HashSet<char>();
-
-                foreach (var q in questions)
-                {
-                    if (line.Contains(q))
-                    {
-                        goodQuestions.Add(q);
-                    }
-                }
-
-                questions = goodQuestions;
-            }
-
-            return questions.Count();
+            return _questions.Count(q => people.All(p => p.Contains(q)));
         }
 
         public override string PartTwo(string input)
         {
-            var groups = input.Paragraphs().Select(p => CountYesAnswers2(p)).Sum();
+            var result = input.Paragraphs().Sum(CountQuestionsWithAllYesAnswers);
 
-            return groups.ToString();
+            return result.ToString();
         }
     }
 }
