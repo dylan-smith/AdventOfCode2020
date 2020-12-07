@@ -21,10 +21,10 @@ namespace AdventOfCode.Days
             var ancestors = rules.Where(r => r.Contents.Any(c => c.Key == target));
             var result = new HashSet<string>();
 
-            foreach (var ancestor in ancestors)
+            foreach (var (Bag, _) in ancestors)
             {
-                result.Add(ancestor.Bag);
-                result.AddRange(GetAncestors(ancestor.Bag, rules));
+                result.Add(Bag);
+                result.AddRange(GetAncestors(Bag, rules));
             }
 
             return result;
