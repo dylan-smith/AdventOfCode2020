@@ -11,29 +11,20 @@ namespace AdventOfCode.Days
             var rules = input.ParseLines(ParseRule).ToList();
             var target = "shiny gold";
 
-            var result = new List<string>();
-
-            var bags = GetBagsThatContain(new List<string>() { target }, rules);
-
-            while (bags.Any())
-            {
-                result.AddRange(bags);
-
-                result = result.Distinct().ToList();
-
-                bags = GetBagsThatContain(bags, rules).Except(result).ToList();
-            }
+            var result = GetAncestors(target, rules);
 
             return result.Count().ToString();
         }
 
-        private List<string> GetBagsThatContain(List<string> bags, List<(string Bag, Dictionary<string, int> Contents)> rules)
+        private IEnumerable<string> GetAncestors(string target, List<(string Bag, Dictionary<string, int> Contents)> rules)
         {
-            var result = new List<string>();
+            var ancestors = rules.Where(r => r.Contents.Any(c => c.Key == target));
+            var result = new HashSet<string>();
 
-            foreach (var bag in bags)
+            foreach (var ancestor in ancestors)
             {
-                result.AddRange(rules.Where(r => r.Contents.Any(c => c.Key == bag)).Select(r => r.Bag));
+                result.Add(ancestor.Bag);
+                result.AddRange(GetAncestors(ancestor.Bag, rules));
             }
 
             return result;
@@ -46,7 +37,7 @@ namespace AdventOfCode.Days
             var bag = $"{words[0]} {words[1]}";
             var contents = new Dictionary<string, int>();
 
-            for (var i = 4; i < words.Count(); i += 4)
+            for (var i = 4; i < words.Count; i += 4)
             {
                 if (words[i] != "no")
                 {
