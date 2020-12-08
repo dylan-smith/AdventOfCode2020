@@ -83,9 +83,7 @@ namespace AdventOfCode.Days
             while (!seen.Contains(_ip))
             {
                 seen.Add(_ip);
-                var instruction = _instructions[_ip];
-                _ip++;
-                ExecuteInstruction(instruction);
+                ExecuteInstruction(_instructions[_ip++]);
 
                 if (_ip == _instructions.Count)
                 {
