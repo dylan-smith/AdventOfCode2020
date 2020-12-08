@@ -12,7 +12,7 @@ namespace AdventOfCode.Days
             var vm = new BootCodeVM(input);
             var result = vm.Run();
 
-            return result.acc.ToString();
+            return result.ToString();
         }
 
         public override string PartTwo(string input)
@@ -21,89 +21,88 @@ namespace AdventOfCode.Days
 
             for (var i = 0; i < instructions.Count; i++)
             {
+                var original = instructions[i];
+
                 if (instructions[i].instruction == "nop")
                 {
                     instructions[i] = ("jmp", instructions[i].arg);
-
-                    var vm = new BootCodeVM(instructions);
-                    var result = vm.Run();
-
-                    if (!result.infinite)
-                    {
-                        return result.acc.ToString();
-                    }
-
-                    instructions[i] = ("nop", instructions[i].arg);
                 }
                 else if (instructions[i].instruction == "jmp")
                 {
                     instructions[i] = ("nop", instructions[i].arg);
-
-                    var vm = new BootCodeVM(instructions);
-                    var result = vm.Run();
-
-                    if (!result.infinite)
-                    {
-                        return result.acc.ToString();
-                    }
-
-                    instructions[i] = ("jmp", instructions[i].arg);
                 }
-            }
-
-            return "failed";
-        }
-    }
-
-    public class BootCodeVM
-    {
-        private long _accumulator;
-        private int _ip = 0;
-        private List<(string instruction, int arg)> _instructions;
-
-        public BootCodeVM(string program)
-        {
-            _instructions = program.ParseLines(ParseInstruction).ToList();
-        }
-
-        public BootCodeVM(List<(string instruction, int arg)> program)
-        {
-            _instructions = program;
-        }
-
-        public static (string instruction, int arg) ParseInstruction(string arg)
-        {
-            return (arg.Words().First(), int.Parse(arg.Words().Last()));
-        }
-
-        public (long acc, bool infinite) Run()
-        {
-            var seen = new List<int>();
-
-            while (!seen.Contains(_ip))
-            {
-                seen.Add(_ip);
-                ExecuteInstruction(_instructions[_ip++]);
-
-                if (_ip == _instructions.Count)
+                else
                 {
-                    return (_accumulator, false);
+                    continue;
                 }
+
+                var vm = new BootCodeVM(instructions);
+                var result = vm.Run();
+
+                if (!vm.InfiniteLoop)
+                {
+                    return result.ToString();
+                }
+
+                instructions[i] = original;
             }
 
-            return (_accumulator, true);
+            throw new Exception();
         }
 
-        private void ExecuteInstruction((string instruction, int arg) instruction)
+        public class BootCodeVM
         {
-            if (instruction.instruction == "acc")
+            private long _accumulator;
+            private int _ip = 0;
+            private List<(string instruction, int arg)> _instructions;
+
+            public bool InfiniteLoop { get; private set; } = false;
+
+            public BootCodeVM(string program)
             {
-                _accumulator += instruction.arg;
+                _instructions = program.ParseLines(ParseInstruction).ToList();
             }
 
-            if (instruction.instruction == "jmp")
+            public BootCodeVM(List<(string instruction, int arg)> program)
             {
-                _ip += instruction.arg - 1;
+                _instructions = program;
+            }
+
+            public static (string instruction, int arg) ParseInstruction(string arg)
+            {
+                return (arg.Words().First(), int.Parse(arg.Words().Last()));
+            }
+
+            public long Run()
+            {
+                var seen = new List<int>();
+
+                while (!seen.Contains(_ip))
+                {
+                    seen.Add(_ip);
+                    ExecuteInstruction(_instructions[_ip++]);
+
+                    if (_ip == _instructions.Count)
+                    {
+                        return _accumulator;
+                    }
+                }
+
+                InfiniteLoop = true;
+                return _accumulator;
+            }
+
+            private void ExecuteInstruction((string instruction, int arg) instruction)
+            {
+                if (instruction.instruction == "acc")
+                {
+                    _accumulator += instruction.arg;
+                }
+
+                if (instruction.instruction == "jmp")
+                {
+                    _ip += instruction.arg - 1;
+                }
             }
         }
     }
