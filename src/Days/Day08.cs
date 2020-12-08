@@ -12,7 +12,7 @@ namespace AdventOfCode.Days
             var vm = new BootCodeVM(input);
             var result = vm.Run();
 
-            return result.ToString();
+            return result.acc.ToString();
         }
 
         public override string PartTwo(string input)
@@ -26,9 +26,9 @@ namespace AdventOfCode.Days
                     instructions[i] = ("jmp", instructions[i].arg);
 
                     var vm = new BootCodeVM(instructions);
-                    var result = vm.Run2();
+                    var result = vm.Run();
 
-                    if (result.result)
+                    if (!result.infinite)
                     {
                         return result.acc.ToString();
                     }
@@ -40,9 +40,9 @@ namespace AdventOfCode.Days
                     instructions[i] = ("nop", instructions[i].arg);
 
                     var vm = new BootCodeVM(instructions);
-                    var result = vm.Run2();
+                    var result = vm.Run();
 
-                    if (result.result)
+                    if (!result.infinite)
                     {
                         return result.acc.ToString();
                     }
@@ -59,7 +59,7 @@ namespace AdventOfCode.Days
     {
         private long _accumulator;
         private int _ip = 0;
-        public List<(string instruction, int arg)> _instructions;
+        private List<(string instruction, int arg)> _instructions;
 
         public BootCodeVM(string program)
         {
@@ -76,22 +76,7 @@ namespace AdventOfCode.Days
             return (arg.Words().First(), int.Parse(arg.Words().Last()));
         }
 
-        public long Run()
-        {
-            var seen = new List<int>();
-
-            while (!seen.Contains(_ip))
-            {
-                seen.Add(_ip);
-                var instruction = _instructions[_ip];
-                _ip++;
-                ExecuteInstruction(instruction);
-            }
-
-            return _accumulator;
-        }
-
-        public (long acc, bool result) Run2()
+        public (long acc, bool infinite) Run()
         {
             var seen = new List<int>();
 
@@ -104,11 +89,11 @@ namespace AdventOfCode.Days
 
                 if (_ip == _instructions.Count)
                 {
-                    return (_accumulator, true);
+                    return (_accumulator, false);
                 }
             }
 
-            return (_accumulator, false);
+            return (_accumulator, true);
         }
 
         private void ExecuteInstruction((string instruction, int arg) instruction)
