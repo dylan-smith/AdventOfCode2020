@@ -56,7 +56,7 @@ namespace AdventOfCode.Days
             private int _ip = 0;
             private List<(string instruction, int arg)> _instructions;
 
-            public bool InfiniteLoop { get; private set; } = false;
+            public bool InfiniteLoop { get; private set; }
 
             public BootCodeVM(string program)
             {
@@ -75,6 +75,7 @@ namespace AdventOfCode.Days
 
             public long Run()
             {
+                InfiniteLoop = false;
                 var seen = new List<int>();
 
                 while (!seen.Contains(_ip))
