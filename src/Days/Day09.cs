@@ -19,9 +19,8 @@ namespace AdventOfCode.Days
             for (var i = 25; i < numbers.Count; i++)
             {
                 var combos = numbers.Skip(i - 25).Take(25).GetCombinations(2);
-                var result = combos.FirstOrDefault(x => x.Sum() == numbers[i]);
 
-                if (result == null)
+                if (!combos.Any(x => x.Sum() == numbers[i]))
                 {
                     return numbers[i];
                 }
