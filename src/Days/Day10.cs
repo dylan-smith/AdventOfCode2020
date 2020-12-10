@@ -12,57 +12,25 @@ namespace AdventOfCode.Days
         public override string PartOne(string input)
         {
             var joltages = input.Integers().OrderBy(x => x). ToList();
-            var ones = 0;
-            var threes = 0;
             var curJoltage = 0;
+            var diffCounts = new Dictionary<int, int>();
 
             foreach (var j in joltages)
             {
-                if (j == curJoltage + 1)
-                {
-                    ones++;
-                }
-                
-                if (j == curJoltage + 3)
-                {
-                    threes++;
-                }
-
+                diffCounts.SafeIncrement(j - curJoltage);
                 curJoltage = j;
             }
 
-            return (ones * (threes + 1)).ToString();
+            return (diffCounts[1] * (diffCounts[3] + 1)).ToString();
         }
 
         public override string PartTwo(string input)
         {
             var joltages = input.Integers().OrderBy(x => x).ToList();
+            joltages.Insert(0, 0);
 
-            var device = joltages.Last() + 3;
-
-            var result = CountArrangements(-1, joltages);
-
-            return result.ToString();
+            return CountArrangements(0, joltages).ToString();
         }
-
-        //private long CountArrangements(int start, int end, List<int> joltages)
-        //{
-        //    var newJolts = joltages.Where(j => j > start).ToList();
-        //    var candidates = joltages.Where(j => j <= start + 3).ToList();
-        //    var result = 0L;
-
-        //    if (candidates.Count == 0)
-        //    {
-        //        return 1;
-        //    }
-
-        //    foreach (var j in candidates)
-        //    {
-        //        result += CountArrangements(j, end, newJolts);
-        //    }
-
-        //    return result;
-        //}
 
         private long CountArrangements(int startIdx, List<int> joltages)
         {
@@ -71,20 +39,16 @@ namespace AdventOfCode.Days
                 return _counts[startIdx];
             }
 
-            var result = 0L;
-
             if (startIdx == joltages.Count - 1)
             {
                 return 1;
             }
 
-            var i = startIdx + 1;
-            var prev = startIdx < 0 ? 0 : joltages[startIdx];
+            var result = 0L;
 
-            while (i < joltages.Count && joltages[i] <= prev + 3)
+            for (var i = startIdx + 1; i < joltages.Count && joltages[i] <= joltages[startIdx] + 3; i++)
             {
                 result += CountArrangements(i, joltages);
-                i++;
             }
 
             _counts.Add(startIdx, result);
