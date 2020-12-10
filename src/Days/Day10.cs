@@ -13,15 +13,15 @@ namespace AdventOfCode.Days
         {
             var joltages = input.Integers().OrderBy(x => x).ToList();
             var curJoltage = 0;
-            var diffCounts = new Dictionary<int, int>();
+            var gaps = new Dictionary<int, int>();
 
             foreach (var j in joltages)
             {
-                diffCounts.SafeIncrement(j - curJoltage);
+                gaps.SafeIncrement(j - curJoltage);
                 curJoltage = j;
             }
 
-            return (diffCounts[1] * (diffCounts[3] + 1)).ToString();
+            return (gaps[1] * (gaps[3] + 1)).ToString();
         }
 
         public override string PartTwo(string input)
