@@ -11,7 +11,7 @@ namespace AdventOfCode.Days
 
         public override string PartOne(string input)
         {
-            var joltages = input.Integers().OrderBy(x => x). ToList();
+            var joltages = input.Integers().OrderBy(x => x).ToList();
             var curJoltage = 0;
             var diffCounts = new Dictionary<int, int>();
 
