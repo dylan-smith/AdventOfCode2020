@@ -11,22 +11,16 @@ namespace AdventOfCode.Days
         {
             var grid = input.CreateCharGrid();
 
-            var occupied = grid.Count('#');
-            var floor = grid.Count('.');
-            var empty = grid.Count('L');
-
+            var prev = grid;
             grid = UpdateSeats(grid);
 
-            while (grid.Count('#') != occupied || grid.Count('.') != floor || grid.Count('L') != empty)
+            while (grid.Count('#') != prev.Count('#') || grid.Count('.') != prev.Count('.') || grid.Count('L') != prev.Count('L'))
             {
-                occupied = grid.Count('#');
-                floor = grid.Count('.');
-                empty = grid.Count('L');
-
+                prev = grid;
                 grid = UpdateSeats(grid);
             }
                         
-            return occupied.ToString();
+            return grid.Count('#').ToString();
         }
 
         private char[,] UpdateSeats(char[,] grid)
@@ -96,22 +90,16 @@ namespace AdventOfCode.Days
         {
             var grid = input.CreateCharGrid();
 
-            var occupied = grid.Count('#');
-            var floor = grid.Count('.');
-            var empty = grid.Count('L');
+            var prev = grid;
+            grid = UpdateSeats2(grid);
 
-            grid = UpdateSeats(grid);
-
-            while (grid.Count('#') != occupied || grid.Count('.') != floor || grid.Count('L') != empty)
+            while (grid.Count('#') != prev.Count('#') || grid.Count('.') != prev.Count('.') || grid.Count('L') != prev.Count('L'))
             {
-                occupied = grid.Count('#');
-                floor = grid.Count('.');
-                empty = grid.Count('L');
-
+                prev = grid;
                 grid = UpdateSeats2(grid);
             }
 
-            return occupied.ToString();
+            return grid.Count('#').ToString();
         }
     }
 }
