@@ -35,7 +35,7 @@ namespace AdventOfCode.Days
 
         private char UpdateSeat(int x, int y, char c, char[,] grid)
         {
-            if (c == 'L' && grid.GetNeighbors(x, y).Count(c => c == '#') == 0)
+            if (c == 'L' && !grid.GetNeighbors(x, y).Any(c => c == '#'))
             {
                 return '#';
             }
@@ -50,7 +50,7 @@ namespace AdventOfCode.Days
 
         private char UpdateSeat2(int x, int y, char c, char[,] grid)
         {
-            if (c == 'L' && GetVisibleSeats(grid, x, y).Count(c => c == '#') == 0)
+            if (c == 'L' && !GetVisibleSeats(grid, x, y).Any(c => c == '#'))
             {
                 return '#';
             }
