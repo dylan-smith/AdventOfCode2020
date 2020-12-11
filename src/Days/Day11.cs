@@ -10,16 +10,14 @@ namespace AdventOfCode.Days
         public override string PartOne(string input)
         {
             var grid = input.CreateCharGrid();
+            char[,] prev;
 
-            var prev = grid;
-            grid = UpdateSeats(grid);
-
-            while (grid.Count('#') != prev.Count('#') || grid.Count('.') != prev.Count('.') || grid.Count('L') != prev.Count('L'))
+            do
             {
                 prev = grid;
                 grid = UpdateSeats(grid);
-            }
-                        
+            } while (grid.Count('#') != prev.Count('#') || grid.Count('.') != prev.Count('.') || grid.Count('L') != prev.Count('L'));
+
             return grid.Count('#').ToString();
         }
 
@@ -89,15 +87,13 @@ namespace AdventOfCode.Days
         public override string PartTwo(string input)
         {
             var grid = input.CreateCharGrid();
+            char[,] prev;
 
-            var prev = grid;
-            grid = UpdateSeats2(grid);
-
-            while (grid.Count('#') != prev.Count('#') || grid.Count('.') != prev.Count('.') || grid.Count('L') != prev.Count('L'))
+            do
             {
                 prev = grid;
                 grid = UpdateSeats2(grid);
-            }
+            } while (grid.Count('#') != prev.Count('#') || grid.Count('.') != prev.Count('.') || grid.Count('L') != prev.Count('L'));
 
             return grid.Count('#').ToString();
         }
