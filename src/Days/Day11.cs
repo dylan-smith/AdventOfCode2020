@@ -16,8 +16,6 @@ namespace AdventOfCode.Days
             var empty = grid.Count('L');
 
             grid = UpdateSeats(grid);
-            Log(grid.GetString());
-            Log("==================");
 
             while (grid.Count('#') != occupied || grid.Count('.') != floor || grid.Count('L') != empty)
             {
@@ -26,8 +24,6 @@ namespace AdventOfCode.Days
                 empty = grid.Count('L');
 
                 grid = UpdateSeats(grid);
-                Log(grid.GetString());
-                Log("==================");
             }
                         
             return occupied.ToString();
@@ -81,18 +77,17 @@ namespace AdventOfCode.Days
             {
                 var xx = x + dir.x;
                 var yy = y + dir.y;
-                var found = false;
 
-                while (xx < grid.Width() && xx >= 0 && yy < grid.Height() && yy >= 0 && !found)
+                while (xx < grid.Width() && xx >= 0 && yy < grid.Height() && yy >= 0)
                 {
                     if (grid[xx, yy] != '.')
                     {
-                        found = true;
                         yield return grid[xx, yy];
+                        break;
                     }
 
-                    xx = xx + dir.x;
-                    yy = yy + dir.y;
+                    xx += dir.x;
+                    yy += dir.y;
                 }
             }
         }
@@ -106,8 +101,6 @@ namespace AdventOfCode.Days
             var empty = grid.Count('L');
 
             grid = UpdateSeats(grid);
-            Log(grid.GetString());
-            Log("==================");
 
             while (grid.Count('#') != occupied || grid.Count('.') != floor || grid.Count('L') != empty)
             {
@@ -116,8 +109,6 @@ namespace AdventOfCode.Days
                 empty = grid.Count('L');
 
                 grid = UpdateSeats2(grid);
-                Log(grid.GetString());
-                Log("==================");
             }
 
             return occupied.ToString();
