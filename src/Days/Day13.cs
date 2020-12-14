@@ -37,14 +37,14 @@ namespace AdventOfCode.Days
         {
             var schedule = input.Lines().Last().Words().ToList();
 
-            // 23 @ 0
+            // 23 @ 0 ***
             // 41 @ 13
-            // 647 @ 23
+            // 647 @ 23  ***
             // 13 @ 41
-            // 19 @ 42
-            // 29 @ 52
+            // 19 @ 42 ***
+            // 29 @ 52 ***
             // 557 @ 54
-            // 37 @ 60
+            // 37 @ 60 ***
             // 17 @ 71
 
             var result = GenerateNums().Where(n => ((n + 31) % 557) == 0)
