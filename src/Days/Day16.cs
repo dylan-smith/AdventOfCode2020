@@ -15,8 +15,7 @@ namespace AdventOfCode.Days
 
             foreach (var ticket in tickets)
             {
-                var invalid = GetInvalidValues(ticket, rules);
-                result += invalid.Sum();
+                result += GetInvalidValues(ticket, rules).Sum();
             }
 
             return result.ToString();
@@ -27,7 +26,7 @@ namespace AdventOfCode.Days
             var rulesText = input.Paragraphs().First();
             var result = new Dictionary<string, List<(int min, int max)>>();
 
-            foreach (var ruleText in rulesText.Lines().ToList())
+            foreach (var ruleText in rulesText.Lines())
             {
                 var colonPos = ruleText.IndexOf(":");
                 var ruleName = ruleText.Substring(0, colonPos);
@@ -36,9 +35,11 @@ namespace AdventOfCode.Days
 
                 var parts = valueText.Split(new string[] { "-", " or " }, StringSplitOptions.RemoveEmptyEntries);
 
-                var ranges = new List<(int min, int max)>();
-                ranges.Add((int.Parse(parts[0]), int.Parse(parts[1])));
-                ranges.Add((int.Parse(parts[2]), int.Parse(parts[3])));
+                var ranges = new List<(int min, int max)>
+                {
+                    (int.Parse(parts[0]), int.Parse(parts[1])),
+                    (int.Parse(parts[2]), int.Parse(parts[3]))
+                };
 
                 result.Add(ruleName, ranges);
             }
@@ -60,40 +61,12 @@ namespace AdventOfCode.Days
 
         private List<int> GetInvalidValues(List<int> ticket, Dictionary<string, List<(int min, int max)>> rules)
         {
-            var result = new List<int>();
-
-            foreach (var field in ticket)
-            {
-                var valid = false;
-
-                foreach (var rule in rules)
-                {
-                    if (MatchesRule(rule.Value, field))
-                    {
-                        valid = true;
-                    }
-                }
-
-                if (!valid)
-                {
-                    result.Add(field);
-                }
-            }
-
-            return result;
+            return ticket.Where(field => !rules.Any(r => MatchesRule(r.Value, field))).ToList();
         }
 
         private bool MatchesRule(List<(int min, int max)> rule, int field)
         {
-            foreach (var range in rule)
-            {
-                if (field >= range.min && field <= range.max)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return rule.Any(range => field >= range.min && field <= range.max);
         }
 
         public override string PartTwo(string input)
@@ -160,11 +133,8 @@ namespace AdventOfCode.Days
                 if (possible.Key != rule)
                 {
                     var fields = new List<int>(possible.Value);
-                    
-                    if (fields.Contains(field))
-                    {
-                        fields.Remove(field);
-                    }
+
+                    fields.Remove(field);
 
                     result.Add(possible.Key, fields);
                 }
