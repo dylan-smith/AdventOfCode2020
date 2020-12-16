@@ -9,7 +9,7 @@ namespace AdventOfCode.Days
     {
         public override string PartOne(string input)
         {
-            var rules = ParseRules(input).ToList();
+            var rules = ParseRules(input);
             var tickets = ParseTickets(input).ToList();
             var result = 0;
 
@@ -22,27 +22,7 @@ namespace AdventOfCode.Days
             return result.ToString();
         }
 
-        private IEnumerable<List<(int min, int max)>> ParseRules(string input)
-        {
-            var rulesText = input.Paragraphs().First();
-
-            foreach (var ruleText in rulesText.Lines().ToList())
-            {
-                var colonPos = ruleText.IndexOf(":");
-
-                var valueText = ruleText.Substring(colonPos + 2);
-
-                var parts = valueText.Split(new string[] { "-", " or " }, StringSplitOptions.RemoveEmptyEntries);
-
-                var ranges = new List<(int min, int max)>();
-                ranges.Add((int.Parse(parts[0]), int.Parse(parts[1])));
-                ranges.Add((int.Parse(parts[2]), int.Parse(parts[3])));
-
-                yield return ranges;
-            }
-        }
-
-        private Dictionary<string, List<(int min, int max)>> ParseRules2(string input)
+        private Dictionary<string, List<(int min, int max)>> ParseRules(string input)
         {
             var rulesText = input.Paragraphs().First();
             var result = new Dictionary<string, List<(int min, int max)>>();
@@ -78,32 +58,7 @@ namespace AdventOfCode.Days
             }
         }
 
-        private List<int> GetInvalidValues(List<int> ticket, List<List<(int min, int max)>> rules)
-        {
-            var result = new List<int>();
-
-            foreach (var field in ticket)
-            {
-                var valid = false;
-
-                foreach (var rule in rules)
-                {
-                    if (MatchesRule(rule, field))
-                    {
-                        valid = true;
-                    }
-                }
-
-                if (!valid)
-                {
-                    result.Add(field);
-                }
-            }
-
-            return result;
-        }
-
-        private List<int> GetInvalidValues2(List<int> ticket, Dictionary<string, List<(int min, int max)>> rules)
+        private List<int> GetInvalidValues(List<int> ticket, Dictionary<string, List<(int min, int max)>> rules)
         {
             var result = new List<int>();
 
@@ -128,7 +83,7 @@ namespace AdventOfCode.Days
             return result;
         }
 
-        private bool MatchesRule(IEnumerable<(int min, int max)> rule, int field)
+        private bool MatchesRule(List<(int min, int max)> rule, int field)
         {
             foreach (var range in rule)
             {
@@ -143,7 +98,7 @@ namespace AdventOfCode.Days
 
         public override string PartTwo(string input)
         {
-            var rules = ParseRules2(input);
+            var rules = ParseRules(input);
             var tickets = ParseTickets(input).ToList();
             var yourTicket = GetYourTicket(input);
             var validTickets = GetValidTickets(tickets, rules).ToList();
@@ -248,60 +203,14 @@ namespace AdventOfCode.Days
             return result;
         }
 
-        private List<int> FindFieldPos(List<(int min, int max)> rule, List<List<int>> tickets)
-        {
-            var possible = new List<int>();
-
-            for (var i = 0; i < tickets[0].Count(); i++)
-            {
-                possible.Add(i);
-            }
-
-            foreach (var ticket in tickets)
-            {
-                for (var i = 0; i < ticket.Count(); i++)
-                {
-                    if (!MatchesRule(rule, ticket.ElementAt(i)))
-                    {
-                        possible.Remove(i);
-                    }
-                }
-            }
-
-            return possible;
-        }
-
         private IEnumerable<List<int>> GetValidTickets(List<List<int>> tickets, Dictionary<string, List<(int min, int max)>> rules)
         {
-            foreach (var ticket in tickets)
-            {
-                var invalid = GetInvalidValues2(ticket, rules);
-
-                if (!invalid.Any())
-                {
-                    yield return ticket;
-                }
-            }
+            return tickets.Where(t => !GetInvalidValues(t, rules).Any());
         }
-
-        private string PrintList(List<int> items)
-        {
-            var result = "";
-
-            foreach (var i in items)
-            {
-                result += i.ToString() + ", ";
-            }
-
-            return result;
-        }
-
-        
 
         private List<int> GetYourTicket(string input)
         {
             var lines = input.Lines().ToList();
-
             var yourTicket = lines.IndexOf("your ticket:");
 
             return lines[yourTicket + 1].Integers().ToList();
