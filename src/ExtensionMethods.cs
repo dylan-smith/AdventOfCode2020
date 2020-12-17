@@ -1414,71 +1414,37 @@ namespace AdventOfCode
 
         public IEnumerable<Point3D> GetNeighbors()
         {
-            var adjacentPoints = new List<Point3D>(6);
-
-            adjacentPoints.Add(new Point3D(X - 1, Y, Z));
-            adjacentPoints.Add(new Point3D(X + 1, Y, Z));
-            adjacentPoints.Add(new Point3D(X, Y + 1, Z));
-            adjacentPoints.Add(new Point3D(X, Y - 1, Z));
-            adjacentPoints.Add(new Point3D(X, Y, Z + 1));
-            adjacentPoints.Add(new Point3D(X, Y, Z - 1));
-
-            return adjacentPoints;
+            return GetNeighbors(false);
         }
 
         public IEnumerable<Point3D> GetNeighbors(bool includeDiagonals)
         {
-            var adjacentPoints = new List<Point3D>(6);
-
             if (!includeDiagonals)
             {
-                adjacentPoints.Add(new Point3D(X - 1, Y, Z));
-                adjacentPoints.Add(new Point3D(X + 1, Y, Z));
-                adjacentPoints.Add(new Point3D(X, Y + 1, Z));
-                adjacentPoints.Add(new Point3D(X, Y - 1, Z));
-                adjacentPoints.Add(new Point3D(X, Y, Z + 1));
-                adjacentPoints.Add(new Point3D(X, Y, Z - 1));
+                yield return new Point3D(X - 1, Y, Z);
+                yield return new Point3D(X + 1, Y, Z);
+                yield return new Point3D(X, Y + 1, Z);
+                yield return new Point3D(X, Y - 1, Z);
+                yield return new Point3D(X, Y, Z + 1);
+                yield return new Point3D(X, Y, Z - 1);
             }
 
             if (includeDiagonals)
             {
-                adjacentPoints.Add(new Point3D(X - 1, Y, Z));
-                adjacentPoints.Add(new Point3D(X + 1, Y, Z));
-
-                adjacentPoints.Add(new Point3D(X, Y + 1, Z));
-                adjacentPoints.Add(new Point3D(X - 1, Y + 1, Z));
-                adjacentPoints.Add(new Point3D(X + 1, Y + 1, Z));
-
-                adjacentPoints.Add(new Point3D(X, Y - 1, Z));
-                adjacentPoints.Add(new Point3D(X - 1, Y - 1, Z));
-                adjacentPoints.Add(new Point3D(X + 1, Y - 1, Z));
-
-                adjacentPoints.Add(new Point3D(X, Y, Z + 1));
-                adjacentPoints.Add(new Point3D(X - 1, Y, Z + 1));
-                adjacentPoints.Add(new Point3D(X + 1, Y, Z + 1));
-
-                adjacentPoints.Add(new Point3D(X, Y + 1, Z + 1));
-                adjacentPoints.Add(new Point3D(X - 1, Y + 1, Z + 1));
-                adjacentPoints.Add(new Point3D(X + 1, Y + 1, Z + 1));
-
-                adjacentPoints.Add(new Point3D(X, Y - 1, Z + 1));
-                adjacentPoints.Add(new Point3D(X - 1, Y - 1, Z + 1));
-                adjacentPoints.Add(new Point3D(X + 1, Y - 1, Z + 1));
-
-                adjacentPoints.Add(new Point3D(X, Y, Z - 1));
-                adjacentPoints.Add(new Point3D(X - 1, Y, Z - 1));
-                adjacentPoints.Add(new Point3D(X + 1, Y, Z - 1));
-
-                adjacentPoints.Add(new Point3D(X, Y + 1, Z - 1));
-                adjacentPoints.Add(new Point3D(X - 1, Y + 1, Z - 1));
-                adjacentPoints.Add(new Point3D(X + 1, Y + 1, Z - 1));
-
-                adjacentPoints.Add(new Point3D(X, Y - 1, Z - 1));
-                adjacentPoints.Add(new Point3D(X - 1, Y - 1, Z - 1));
-                adjacentPoints.Add(new Point3D(X + 1, Y - 1, Z - 1));
+                for (var x = -1; x <= 1; x++)
+                {
+                    for (var y = -1; y <= 1; y++)
+                    {
+                        for (var z = -1; z <= 1; z++)
+                        {
+                            if (x != 0 || y != 0 || z != 0)
+                            {
+                                yield return new Point3D(this.X + x, this.Y + y, this.Z + z);
+                            }
+                        }
+                    }
+                }
             }
-
-            return adjacentPoints;
         }
     }
 
