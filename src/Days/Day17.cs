@@ -59,7 +59,6 @@ namespace AdventOfCode.Days
         private HashSet<Point3D> CycleGrid3D(HashSet<Point3D> grid)
         {
             var result = new HashSet<Point3D>();
-
             var cubes = GetAllCubes3D(grid);
 
             foreach (var cube in cubes)
@@ -84,7 +83,6 @@ namespace AdventOfCode.Days
         private HashSet<Point4D> CycleGrid4D(HashSet<Point4D> grid)
         {
             var result = new HashSet<Point4D>();
-
             var cubes = GetAllCubes4D(grid);
 
             foreach (var cube in cubes)
