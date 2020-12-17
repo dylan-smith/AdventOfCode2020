@@ -9,17 +9,17 @@ namespace AdventOfCode.Days
     {
         public override string PartOne(string input)
         {
-            var grid = CreateGrid(input);
+            var grid = CreateGrid3D(input);
 
             for (var i = 0; i < 6; i++)
             {
-                grid = CycleGrid(grid);
+                grid = CycleGrid3D(grid);
             }
             
             return grid.Count.ToString();
         }
 
-        private HashSet<Point3D> CreateGrid(string input)
+        private HashSet<Point3D> CreateGrid3D(string input)
         {
             var rows = input.Lines().ToList();
             var result = new HashSet<Point3D>();
@@ -57,11 +57,11 @@ namespace AdventOfCode.Days
             return result;
         }
 
-        private HashSet<Point3D> CycleGrid(HashSet<Point3D> grid)
+        private HashSet<Point3D> CycleGrid3D(HashSet<Point3D> grid)
         {
             var result = new HashSet<Point3D>();
 
-            var cubes = GetAllCubes(grid);
+            var cubes = GetAllCubes3D(grid);
 
             foreach (var cube in cubes)
             {
@@ -107,7 +107,7 @@ namespace AdventOfCode.Days
             return result;
         }
 
-        private HashSet<Point3D> GetAllCubes(HashSet<Point3D> grid)
+        private HashSet<Point3D> GetAllCubes3D(HashSet<Point3D> grid)
         {
             var result = new HashSet<Point3D>();
 
