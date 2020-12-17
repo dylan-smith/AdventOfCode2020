@@ -16,7 +16,7 @@ namespace AdventOfCode.Days
                 grid = CycleGrid(grid);
             }
             
-            return grid.Count().ToString();
+            return grid.Count.ToString();
         }
 
         private HashSet<Point3D> CreateGrid(string input)
@@ -142,7 +142,7 @@ namespace AdventOfCode.Days
                 grid = CycleGrid4D(grid);
             }
 
-            return grid.Count().ToString();
+            return grid.Count.ToString();
         }
     }
 }
