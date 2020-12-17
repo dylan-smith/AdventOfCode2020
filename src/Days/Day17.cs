@@ -64,7 +64,7 @@ namespace AdventOfCode.Days
 
             foreach (var cube in cubes)
             {
-                var neighbors = cube.GetNeighbors(true);
+                var neighbors = cube.GetNeighbors(includeDiagonals: true);
                 var activeNeighbors = neighbors.Count(n => grid.Contains(n));
 
                 if (grid.Contains(cube) && (activeNeighbors == 2 || activeNeighbors == 3))
@@ -89,7 +89,7 @@ namespace AdventOfCode.Days
 
             foreach (var cube in cubes)
             {
-                var neighbors = cube.GetNeighbors();
+                var neighbors = cube.GetNeighbors(includeDiagonals: true);
                 var activeNeighbors = neighbors.Count(n => grid.Contains(n));
 
                 if (grid.Contains(cube) && (activeNeighbors == 2 || activeNeighbors == 3))
@@ -113,7 +113,7 @@ namespace AdventOfCode.Days
             foreach (var cube in grid)
             {
                 result.Add(cube);
-                result.AddRange(cube.GetNeighbors(true));
+                result.AddRange(cube.GetNeighbors(includeDiagonals: true));
             }
 
             return result;
@@ -126,7 +126,7 @@ namespace AdventOfCode.Days
             foreach (var cube in grid)
             {
                 result.Add(cube);
-                result.AddRange(cube.GetNeighbors());
+                result.AddRange(cube.GetNeighbors(includeDiagonals: true));
             }
 
             return result;

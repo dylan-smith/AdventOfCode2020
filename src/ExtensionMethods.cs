@@ -1529,21 +1529,40 @@ namespace AdventOfCode
 
         public IEnumerable<Point4D> GetNeighbors()
         {
-            for (var x = -1; x <= 1; x++)
+            return GetNeighbors(false);
+        }
+
+        public IEnumerable<Point4D> GetNeighbors(bool includeDiagonals)
+        {
+            if (includeDiagonals)
             {
-                for (var y = -1; y <= 1; y++)
+                for (var x = -1; x <= 1; x++)
                 {
-                    for (var z = -1; z <= 1; z++)
+                    for (var y = -1; y <= 1; y++)
                     {
-                        for (var t = -1; t <= 1; t++)
+                        for (var z = -1; z <= 1; z++)
                         {
-                            if (x != 0 || y != 0 || z != 0 || t != 0)
+                            for (var t = -1; t <= 1; t++)
                             {
-                                yield return new Point4D(this.X + x, this.Y + y, this.Z + z, this.T + t);
+                                if (x != 0 || y != 0 || z != 0 || t != 0)
+                                {
+                                    yield return new Point4D(this.X + x, this.Y + y, this.Z + z, this.T + t);
+                                }
                             }
                         }
                     }
                 }
+            }
+            else
+            {
+                yield return new Point4D(this.X - 1, this.Y, this.Z, this.T);
+                yield return new Point4D(this.X + 1, this.Y, this.Z, this.T);
+                yield return new Point4D(this.X, this.Y - 1, this.Z, this.T);
+                yield return new Point4D(this.X, this.Y + 1, this.Z, this.T);
+                yield return new Point4D(this.X, this.Y, this.Z - 1, this.T);
+                yield return new Point4D(this.X, this.Y, this.Z + 1, this.T);
+                yield return new Point4D(this.X, this.Y, this.Z, this.T - 1);
+                yield return new Point4D(this.X, this.Y, this.Z, this.T + 1);
             }
         }
     }
