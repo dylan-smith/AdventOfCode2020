@@ -141,7 +141,7 @@ namespace AdventOfCode
                     var newCombo = new List<T>(length);
                     newCombo.Add(source.ElementAt(i));
                     newCombo.AddRange(c);
-                    
+
                     yield return newCombo;
                 }
             }
@@ -1425,6 +1425,61 @@ namespace AdventOfCode
 
             return adjacentPoints;
         }
+
+        public IEnumerable<Point3D> GetNeighbors(bool includeDiagonals)
+        {
+            var adjacentPoints = new List<Point3D>(6);
+
+            if (!includeDiagonals)
+            {
+                adjacentPoints.Add(new Point3D(X - 1, Y, Z));
+                adjacentPoints.Add(new Point3D(X + 1, Y, Z));
+                adjacentPoints.Add(new Point3D(X, Y + 1, Z));
+                adjacentPoints.Add(new Point3D(X, Y - 1, Z));
+                adjacentPoints.Add(new Point3D(X, Y, Z + 1));
+                adjacentPoints.Add(new Point3D(X, Y, Z - 1));
+            }
+
+            if (includeDiagonals)
+            {
+                adjacentPoints.Add(new Point3D(X - 1, Y, Z));
+                adjacentPoints.Add(new Point3D(X + 1, Y, Z));
+
+                adjacentPoints.Add(new Point3D(X, Y + 1, Z));
+                adjacentPoints.Add(new Point3D(X - 1, Y + 1, Z));
+                adjacentPoints.Add(new Point3D(X + 1, Y + 1, Z));
+
+                adjacentPoints.Add(new Point3D(X, Y - 1, Z));
+                adjacentPoints.Add(new Point3D(X - 1, Y - 1, Z));
+                adjacentPoints.Add(new Point3D(X + 1, Y - 1, Z));
+
+                adjacentPoints.Add(new Point3D(X, Y, Z + 1));
+                adjacentPoints.Add(new Point3D(X - 1, Y, Z + 1));
+                adjacentPoints.Add(new Point3D(X + 1, Y, Z + 1));
+
+                adjacentPoints.Add(new Point3D(X, Y + 1, Z + 1));
+                adjacentPoints.Add(new Point3D(X - 1, Y + 1, Z + 1));
+                adjacentPoints.Add(new Point3D(X + 1, Y + 1, Z + 1));
+
+                adjacentPoints.Add(new Point3D(X, Y - 1, Z + 1));
+                adjacentPoints.Add(new Point3D(X - 1, Y - 1, Z + 1));
+                adjacentPoints.Add(new Point3D(X + 1, Y - 1, Z + 1));
+
+                adjacentPoints.Add(new Point3D(X, Y, Z - 1));
+                adjacentPoints.Add(new Point3D(X - 1, Y, Z - 1));
+                adjacentPoints.Add(new Point3D(X + 1, Y, Z - 1));
+
+                adjacentPoints.Add(new Point3D(X, Y + 1, Z - 1));
+                adjacentPoints.Add(new Point3D(X - 1, Y + 1, Z - 1));
+                adjacentPoints.Add(new Point3D(X + 1, Y + 1, Z - 1));
+
+                adjacentPoints.Add(new Point3D(X, Y - 1, Z - 1));
+                adjacentPoints.Add(new Point3D(X - 1, Y - 1, Z - 1));
+                adjacentPoints.Add(new Point3D(X + 1, Y - 1, Z - 1));
+            }
+
+            return adjacentPoints;
+        }
     }
 
     public class Point4D : IEquatable<Point4D>
@@ -1504,6 +1559,26 @@ namespace AdventOfCode
             hashCode = hashCode * 486187739 * T.GetHashCode();
 
             return hashCode;
+        }
+
+        public IEnumerable<Point4D> GetNeighbors()
+        {
+            for (var x = -1; x <= 1; x++)
+            {
+                for (var y = -1; y <= 1; y++)
+                {
+                    for (var z = -1; z <= 1; z++)
+                    {
+                        for (var t = -1; t <= 1; t++)
+                        {
+                            if (x != 0 || y != 0 || z != 0 || t != 0)
+                            {
+                                yield return new Point4D(this.X + x, this.Y + y, this.Z + z, this.T + t);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
