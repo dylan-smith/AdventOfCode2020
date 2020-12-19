@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace AdventOfCode.Days
@@ -10,18 +9,21 @@ namespace AdventOfCode.Days
         public override string PartOne(string input)
         {
             var rules = ParseRules(input.Paragraphs().First());
-            var expanded = ExpandedRule.ExpandRule(0, rules);
+            var expanded = new ExpandedRule(0, rules);
 
-            var messages = input.Paragraphs().Last().Lines().Select(line => line.Select(c => c == 'a' ? 2 : 118).ToList()).ToList();
+            var messages = input.Paragraphs()
+                                .Last()
+                                .ParseLines(line => line.Select(c => c == 'a' ? 2 : 118)
+                                                        .ToList());
 
             var result = messages.Count(m => expanded.MatchesMessage(m).Any(c => c == m.Count));
 
             return result.ToString();
         }
 
-        private Dictionary<int, (int a, int b, int c, int d)> ParseRules(string input)
+        private Dictionary<int, (int a, int b, int c, int d, int e)> ParseRules(string input)
         {
-            var result = new Dictionary<int, (int a, int b, int c, int d)>();
+            var result = new Dictionary<int, (int a, int b, int c, int d, int e)>();
 
             foreach (var line in input.Lines())
             {
@@ -34,6 +36,7 @@ namespace AdventOfCode.Days
                     var b = -1;
                     var c = -1;
                     var d = -1;
+                    var e = -1;
 
                     if (!line.Contains("|"))
                     {
@@ -55,6 +58,11 @@ namespace AdventOfCode.Days
                             {
                                 d = int.Parse(words[5]);
                             }
+
+                            if (words.Count > 6)
+                            {
+                                e = int.Parse(words[6]);
+                            }
                         }
                         else
                         {
@@ -67,7 +75,7 @@ namespace AdventOfCode.Days
                         }
                     }
 
-                    result.Add(number, (a, b, c, d));
+                    result.Add(number, (a, b, c, d, e));
                 }
             }
 
@@ -76,74 +84,71 @@ namespace AdventOfCode.Days
 
         public override string PartTwo(string input)
         {
-            throw new NotImplementedException();
-        }
+            var rules = ParseRules(input.Paragraphs().First());
 
-        // 2 and 118 are the terminal rules
+            var eight = (42, -1, 42, 8, -1);
+            var eleven = (42, 31, 42, 11, 31);
+
+            rules[8] = eight;
+            rules[11] = eleven;
+
+            var expanded = new ExpandedRule(0, rules);
+
+            var messages = input.Paragraphs()
+                                .Last()
+                                .ParseLines(line => line.Select(c => c == 'a' ? 2 : 118)
+                                                        .ToList());
+
+            var result = messages.Count(m => expanded.MatchesMessage(m).Any(c => c == m.Count));
+
+            return result.ToString();
+        }
 
         private class ExpandedRule
         {
-            public List<ExpandedRule> Left { get; set; } = new List<ExpandedRule>();
-            public List<ExpandedRule> Right { get; set; } = new List<ExpandedRule>();
             public int Value { get; set; } = -1;
+            private (int a, int b, int c, int d, int e) _rule;
+            private Dictionary<int, (int a, int b, int c, int d, int e)> _rules;
 
-            public static ExpandedRule ExpandRule(int ruleNumber, Dictionary<int, (int a, int b, int c, int d)> rules)
+            public ExpandedRule(int ruleNumber, Dictionary<int, (int a, int b, int c, int d, int e)> rules)
             {
-                var result = new ExpandedRule();
-
                 if (ruleNumber == 2 || ruleNumber == 118)
                 {
-                    result.Value = ruleNumber;
-                    return result;
+                    Value = ruleNumber;
                 }
-
-                var rule = rules[ruleNumber];
-
-                result.Left.Add(ExpandedRule.ExpandRule(rule.a, rules));
-
-                if (rule.b != -1)
+                else
                 {
-                    result.Left.Add(ExpandedRule.ExpandRule(rule.b, rules));
+                    _rule = rules[ruleNumber];
+                    _rules = rules;
                 }
-
-                if (rule.c != -1)
-                {
-                    result.Right.Add(ExpandedRule.ExpandRule(rule.c, rules));
-                }
-
-                if (rule.d != -1)
-                {
-                    result.Right.Add(ExpandedRule.ExpandRule(rule.d, rules));
-                }
-
-                return result;
             }
 
-            public override string ToString()
+            public IEnumerable<ExpandedRule> GetLeft()
             {
-                if (Value != -1)
+                yield return new ExpandedRule(_rule.a, _rules);
+
+                if (_rule.b != -1)
                 {
-                    return Value.ToString();
+                    yield return new ExpandedRule(_rule.b, _rules);
+                }
+            }
+
+            public IEnumerable<ExpandedRule> GetRight()
+            {
+                if (_rule.c != -1)
+                {
+                    yield return new ExpandedRule(_rule.c, _rules);
                 }
 
-                var result = "";
-
-                foreach (var l in Left)
+                if (_rule.d != -1)
                 {
-                    result += $"({ l.ToString() }) ";
+                    yield return new ExpandedRule(_rule.d, _rules);
                 }
 
-                if (Right.Any())
+                if (_rule.e != -1)
                 {
-                    result += "| ";
+                    yield return new ExpandedRule(_rule.e, _rules);
                 }
-
-                foreach (var r in Right)
-                {
-                    result += $"({ r.ToString() }) ";
-                }
-
-                return result;
             }
 
             public List<int> MatchesMessage(List<int> message)
@@ -163,7 +168,7 @@ namespace AdventOfCode.Days
                     return leftResults;
                 }
 
-                foreach (var l in Left)
+                foreach (var l in GetLeft())
                 {
                     if (!leftResults.Any())
                     {
@@ -183,13 +188,16 @@ namespace AdventOfCode.Days
 
                         foreach (var r in leftResults)
                         {
-                            var counts = l.MatchesMessage(message.Skip(r).ToList());
-
-                            if (counts.Any())
+                            if (message.Count > r)
                             {
-                                foreach (var c in counts)
+                                var counts = l.MatchesMessage(message.Skip(r).ToList());
+
+                                if (counts.Any())
                                 {
-                                    newResults.Add(r + c);
+                                    foreach (var c in counts)
+                                    {
+                                        newResults.Add(r + c);
+                                    }
                                 }
                             }
                         }
@@ -212,7 +220,7 @@ namespace AdventOfCode.Days
                 var rightResults = new List<int>();
                 matchFound = true;
 
-                foreach (var r in Right)
+                foreach (var r in GetRight())
                 {
                     if (!rightResults.Any())
                     {
@@ -232,13 +240,16 @@ namespace AdventOfCode.Days
 
                         foreach (var res in rightResults)
                         {
-                            var counts = r.MatchesMessage(message.Skip(res).ToList());
-
-                            if (counts.Any())
+                            if (message.Count > res)
                             {
-                                foreach (var c in counts)
+                                var counts = r.MatchesMessage(message.Skip(res).ToList());
+
+                                if (counts.Any())
                                 {
-                                    newResults.Add(res + c);
+                                    foreach (var c in counts)
+                                    {
+                                        newResults.Add(res + c);
+                                    }
                                 }
                             }
                         }
