@@ -27,7 +27,10 @@ namespace AdventOfCode.Days
 
                 var result = EvaluateArithmetic1(subExpression);
 
-                parts = parts.Take(opening).Concat(new List<string>() { result.ToString() }).Concat(parts.Skip(closing + 1)).ToList();
+                parts = parts.Take(opening)
+                             .Concat(new List<string>() { result.ToString() })
+                             .Concat(parts.Skip(closing + 1))
+                             .ToList();
             }
 
             return EvaluateArithmetic1(parts);
@@ -37,7 +40,7 @@ namespace AdventOfCode.Days
         {
             var result = long.Parse(expression[0]);
 
-            for (var i = 0; i < expression.Count; i++)
+            for (var i = 1; i < expression.Count; i += 2)
             {
                 if (expression[i] == "+")
                 {
