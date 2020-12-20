@@ -1315,6 +1315,48 @@ namespace AdventOfCode
         {
             return grid[x % grid.Width(), y % grid.Height()];
         }
+
+        public static char[,] Rotate(this char[,] grid, int count)
+        {
+            var result = grid;
+
+            for (var i = 0; i < count; i++)
+            {
+                result = result.Rotate();
+            }
+
+            return result;
+        }
+
+        public static char[,] Rotate(this char[,] grid)
+        {
+            var result = new char[grid.Width(), grid.Height()];
+
+            for (var y = 0; y < grid.Height(); y++)
+            {
+                for (var x = 0; x < grid.Width(); x++)
+                {
+                    result[grid.Width() - y - 1, x] = grid[x, y];
+                }
+            }
+
+            return result;
+        }
+
+        public static char[,] FlipVertical(this char[,] grid)
+        {
+            var result = new char[grid.Width(), grid.Height()];
+
+            for (var y = 0; y < grid.Height(); y++)
+            {
+                for (var x = 0; x < grid.Width(); x++)
+                {
+                    result[x, grid.Height() - y - 1] = grid[x, y];
+                }
+            }
+
+            return result;
+        }
     }
 
     public static class NumericExtensions
