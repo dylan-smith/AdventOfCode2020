@@ -11,93 +11,11 @@ namespace AdventOfCode.Days
         public override string PartOne(string input)
         {
             var tiles = ParseTiles(input);
+            var orientations = GetAllOrientations(tiles);
 
-            var corners = FindCorners(tiles);
+            var corners = orientations.Where(tile => tile.Value.Take(4).Count(o => !HasMatchingSide(o.GetTopRow(), orientations, tile.Key)) == 2);
 
-            corners.ForEach(c => Log($"{c}"));
-
-            return corners.Multiply().ToString();
-        }
-
-        private List<long> FindCorners(Dictionary<int, char[,]> tiles)
-        {
-            var corners = new List<long>();
-
-            foreach (var a in tiles)
-            {
-                var sides = GetSides(a.Value);
-
-                foreach (var b in tiles)
-                {
-                    if (a.Key != b.Key)
-                    {
-                        var newSides = new List<string>();
-
-                        foreach (var side in sides)
-                        {
-                            if (!SidesMatch(side, b.Value))
-                            {
-                                newSides.Add(side);
-                            }
-                        }
-
-                        sides = newSides;
-                    }
-                }
-
-                if (sides.Count() == 2)
-                {
-                    corners.Add((long)a.Key);
-                }
-            }
-
-            return corners;
-        }
-
-        private bool SidesMatch(string compare, char[,] value)
-        {
-            var flipped = compare.ReverseString();
-            var sides = GetSides(value);
-
-            foreach (var side in sides)
-            {
-                if (compare == side || flipped == side)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private List<string> GetSides(char[,] value)
-        {
-            var top = string.Empty;
-            var bottom = string.Empty;
-            var left = string.Empty;
-            var right = string.Empty;
-
-            for (var x = 0; x < value.Width(); x++)
-            {
-                top += value[x, 0];
-            }
-
-            for (var x = 0; x < value.Width(); x++)
-            {
-                bottom += value[x, value.GetUpperBound(1)];
-            }
-
-            for (var y = 0; y < value.Height(); y++)
-            {
-                left += value[0, y];
-            }
-
-            for (var y = 0; y < value.Height(); y++)
-            {
-                right += value[value.GetUpperBound(0), y];
-            }
-
-            return new List<string>() { top, bottom, left, right };
+            return corners.Multiply(c => (long)c.Key).ToString();
         }
 
         private Dictionary<int, char[,]> ParseTiles(string input)
@@ -119,47 +37,38 @@ namespace AdventOfCode.Days
         public override string PartTwo(string input)
         {
             var tiles = ParseTiles(input);
+            var map = BuildMap(tiles);
+            var orientations = GetOrientations(map);
 
-            var map = ArrangeTiles(tiles);
-
-            var variations = GetVariations(map);
-
-            foreach (var variation in variations)
+            foreach (var orientation in orientations)
             {
-                var monsterPoints = CountSeaMonsters(variation);
+                var monsters = CountSeaMonsters(orientation);
 
-                if (monsterPoints.Any())
+                if (monsters > 0)
                 {
-                    var result = variation.GetPoints('#').Count(p => !monsterPoints.Contains(p));
+                    var result = orientation.Count('#') - (monsters * 15);
                     return result.ToString();
                 }
             }
 
-            return "foo";
+            throw new Exception();
         }
 
-        private List<Point> CountSeaMonsters(char[,] map)
+        private Dictionary<int, List<char[,]>> GetAllOrientations(Dictionary<int, char[,]> tiles)
         {
-            var result = new List<Point>();
+            var result = new Dictionary<int, List<char[,]>>();
 
-            var monsterPoints = new List<Point>()
+            foreach (var tile in tiles)
             {
-                new Point(0, 1),
-                new Point(1, 2),
-                new Point(4, 2),
-                new Point(5, 1),
-                new Point(6, 1),
-                new Point(7, 2),
-                new Point(10, 2),
-                new Point(11, 1),
-                new Point(12, 1),
-                new Point(13, 2),
-                new Point(16, 2),
-                new Point(17, 1),
-                new Point(18, 1),
-                new Point(18, 0),
-                new Point(19, 1)
-            };
+                result.Add(tile.Key, GetOrientations(tile.Value).ToList());
+            }
+
+            return result;
+        }
+
+        private int CountSeaMonsters(char[,] map)
+        {
+            var result = 0;
 
             for (var y = 0; y < map.Height(); y++)
             {
@@ -167,10 +76,7 @@ namespace AdventOfCode.Days
                 {
                     if (CheckForSeaMonster(map, x, y))
                     {
-                        foreach (var p in monsterPoints)
-                        {
-                            result.Add(new Point(x + p.X, y + p.Y));
-                        }
+                        result++;
                     }
                 }
             }
@@ -220,139 +126,156 @@ namespace AdventOfCode.Days
             return true;
         }
 
-        private List<char[,]> GetVariations(char[,] map)
+        private IEnumerable<char[,]> GetOrientations(char[,] map)
         {
-            var result = new List<char[,]>();
+            yield return map;
+            yield return map.RotateClockwise(1);
+            yield return map.RotateClockwise(2);
+            yield return map.RotateClockwise(3);
 
-            result.Add(map);
-            result.Add(map.Rotate(1));
-            result.Add(map.Rotate(2));
-            result.Add(map.Rotate(3));
-
-            result.Add(map.FlipVertical());
-            result.Add(map.FlipVertical().Rotate(1));
-            result.Add(map.FlipVertical().Rotate(2));
-            result.Add(map.FlipVertical().Rotate(3));
-
-            return result;
+            yield return map.FlipVertical();
+            yield return map.FlipVertical().RotateClockwise(1);
+            yield return map.FlipVertical().RotateClockwise(2);
+            yield return map.FlipVertical().RotateClockwise(3);
         }
 
-        private char[,] ArrangeTiles(Dictionary<int, char[,]> tiles)
+        private char[,] BuildMap(Dictionary<int, char[,]> tiles)
         {
-            var variations = GetVariations(tiles);
+            var orientations = GetAllOrientations(tiles);
             var size = (int)Math.Sqrt(tiles.Count);
             var map = new char[size, size][,];
-            var foundId = 0;
 
-            foreach (var id in variations)
-            {
-                foreach (var variation in id.Value)
-                {
-                    if (!HasMatch(GetTop(variation), variations, id.Key) && !HasMatch(GetLeft(variation), variations, id.Key))
-                    {
-                        map[0, 0] = variation;
-                        foundId = id.Key;
-                        break;
-                    }
-                }
-            }
-
-            variations.Remove(foundId);
+            var (topLeftCornerId, topLeftMap) = FindTopLeftCorner(orientations);
+            map[0, 0] = topLeftMap;
+            orientations.Remove(topLeftCornerId);
 
             for (var y = 0; y < size; y++)
             {
                 for (var x = 0; x < size; x++)
                 {
-                    if (y == 0 && x > 0)
+                    if (x > 0 || y > 0)
                     {
-                        var matchLeft = GetRight(map[x - 1, y]);
-
-                        foreach (var id in variations)
-                        {
-                            foreach (var variation in id.Value)
-                            {
-                                if (GetLeft(variation) == matchLeft && !HasMatch(GetTop(variation), variations, id.Key))
-                                {
-                                    map[x, y] = variation;
-                                    foundId = id.Key;
-                                    break;
-                                }
-                            }
-                        }
-
-                        variations.Remove(foundId);
-                    }
-
-                    if (x == 0 && y > 0)
-                    {
-                        var matchTop = GetBottom(map[x, y - 1]);
-
-                        foreach (var id in variations)
-                        {
-                            foreach (var variation in id.Value)
-                            {
-                                if (GetTop(variation) == matchTop && !HasMatch(GetLeft(variation), variations, id.Key))
-                                {
-                                    map[x, y] = variation;
-                                    foundId = id.Key;
-                                    break;
-                                }
-                            }
-                        }
-
-                        variations.Remove(foundId);
-                    }
-
-                    if (x > 0 && y > 0)
-                    {
-                        var matchTop = GetBottom(map[x, y - 1]);
-                        var matchLeft = GetRight(map[x - 1, y]);
-
-                        foreach (var id in variations)
-                        {
-                            foreach (var variation in id.Value)
-                            {
-                                if (GetTop(variation) == matchTop && GetLeft(variation) == matchLeft)
-                                {
-                                    map[x, y] = variation;
-                                    foundId = id.Key;
-                                    break;
-                                }
-                            }
-                        }
-
-                        variations.Remove(foundId);
+                        var (id, tile) = FindMapTile(x, y, map, orientations);
+                        map[x, y] = tile;
+                        orientations.Remove(id);
                     }
                 }
             }
 
-            var finalMap = RemoveBorders(map);
+            return RemoveBorders(map);
+        }
 
-            return finalMap;
+        private (int id, char[,] tile) FindMapTile(int x, int y, char[,][,] map, Dictionary<int, List<char[,]>> orientations)
+        {
+            var matchLeft = string.Empty;
+            var matchTop = string.Empty;
+
+            // top row
+            if (y == 0)
+            {
+                matchLeft = map[x - 1, y].GetRightColumn();
+                matchTop = "none";
+            }
+
+            // left column
+            if (x == 0)
+            {
+                matchTop = map[x, y - 1].GetBottomRow();
+                matchLeft = "none";
+            }
+
+            // everything else
+            if (y > 0 && x > 0)
+            {
+                matchTop = map[x, y - 1].GetBottomRow();
+                matchLeft = map[x - 1, y].GetRightColumn();
+            }
+
+            foreach (var id in orientations)
+            {
+                foreach (var orientation in id.Value)
+                {
+                    if (IsMatch(orientation, matchLeft, matchTop, orientations, id.Key))
+                    {
+                        return (id.Key, orientation);
+                    }
+                }
+            }
+
+            throw new Exception();
+        }
+
+        private bool IsMatch(char[,] orientation, string matchLeft, string matchTop, Dictionary<int, List<char[,]>> orientations, int id)
+        {
+            if (matchLeft == "none")
+            {
+                if (HasMatchingSide(orientation.GetLeftColumn(), orientations, id))
+                {
+                    return false;
+                }
+            }
+
+            if (matchTop == "none")
+            {
+                if (HasMatchingSide(orientation.GetTopRow(), orientations, id))
+                {
+                    return false;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(matchLeft) && matchLeft != "none")
+            {
+                if (orientation.GetLeftColumn() != matchLeft)
+                {
+                    return false;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(matchTop) && matchTop != "none")
+            {
+                if (orientation.GetTopRow() != matchTop)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private (int id, char[,] orientation) FindTopLeftCorner(Dictionary<int, List<char[,]>> orientations)
+        {
+            foreach (var tile in orientations)
+            {
+                foreach (var orientation in tile.Value)
+                {
+                    if (!HasMatchingSide(orientation.GetTopRow(), orientations, tile.Key) && 
+                        !HasMatchingSide(orientation.GetLeftColumn(), orientations, tile.Key))
+                    {
+                        return (tile.Key, orientation);
+                    }
+                }
+            }
+
+            throw new Exception();
         }
 
         private char[,] RemoveBorders(char[,][,] map)
         {
-            var tilesWide = map.GetUpperBound(0) + 1;
-            var tilesHigh = map.GetUpperBound(1) + 1;
-            var tileWidth = map[0, 0].Width();
-            var tileHeight = map[0, 0].Height();
-
-            var finalWidth = (tileWidth - 2) * tilesWide;
-            var finalHeight = (tileHeight - 2) * tilesHigh;
+            var finalWidth = (map[0, 0].Width() - 2) * map.Width();
+            var finalHeight = (map[0, 0].Height() - 2) * map.Height();
 
             var result = new char[finalWidth, finalHeight];
 
-            for (var y = 0; y < tilesHigh; y++)
+            for (var y = 0; y < map.Height(); y++)
             {
-                for (var x = 0; x < tilesWide; x++)
+                for (var x = 0; x < map.Width(); x++)
                 {
-                    for (var yy = 1; yy < (tileHeight - 1); yy++)
+                    for (var yy = 1; yy < (map[x, y].Height() - 1); yy++)
                     {
-                        for (var xx = 1; xx < (tileWidth - 1); xx++)
+                        for (var xx = 1; xx < (map[x, y].Width() - 1); xx++)
                         {
-                            var fx = (x * (tileWidth - 2)) + xx - 1;
-                            var fy = (y * (tileHeight - 2)) + yy - 1;
+                            var fx = (x * (map[x, y].Width() - 2)) + xx - 1;
+                            var fy = (y * (map[x, y].Height() - 2)) + yy - 1;
 
                             result[fx, fy] = map[x, y][xx, yy];
                         }
@@ -363,15 +286,15 @@ namespace AdventOfCode.Days
             return result;
         }
 
-        private bool HasMatch(string compare, Dictionary<int, List<char[,]>> variations, int key)
+        private bool HasMatchingSide(string side, Dictionary<int, List<char[,]>> orientations, int id)
         {
-            foreach (var id in variations)
+            foreach (var tile in orientations)
             {
-                if (id.Key != key)
+                if (tile.Key != id)
                 {
-                    foreach (var variation in id.Value)
+                    foreach (var orientation in tile.Value)
                     {
-                        if (GetTop(variation) == compare)
+                        if (orientation.GetTopRow() == side)
                         {
                             return true;
                         }
@@ -380,78 +303,6 @@ namespace AdventOfCode.Days
             }
 
             return false;
-        }
-
-        private string GetTop(char[,] value)
-        {
-            var top = string.Empty;
-
-            for (var x = 0; x < value.Width(); x++)
-            {
-                top += value[x, 0];
-            }
-
-            return top;
-        }
-
-        private string GetBottom(char[,] value)
-        {
-            var bottom = string.Empty;
-
-            for (var x = 0; x < value.Width(); x++)
-            {
-                bottom += value[x, value.GetUpperBound(1)];
-            }
-
-            return bottom;
-        }
-
-        private string GetLeft(char[,] value)
-        {
-            var left = string.Empty;
-
-            for (var y = 0; y < value.Height(); y++)
-            {
-                left += value[0, y];
-            }
-
-            return left;
-        }
-
-        private string GetRight(char[,] value)
-        {
-            var right = string.Empty;
-
-            for (var y = 0; y < value.Height(); y++)
-            {
-                right += value[value.GetUpperBound(0), y];
-            }
-
-            return right;
-        }
-
-        private Dictionary<int, List<char[,]>> GetVariations(Dictionary<int, char[,]> tiles)
-        {
-            var result = new Dictionary<int, List<char[,]>>();
-
-            foreach (var tile in tiles)
-            {
-                var variations = new List<char[,]>();
-
-                variations.Add(tile.Value);
-                variations.Add(tile.Value.Rotate(1));
-                variations.Add(tile.Value.Rotate(2));
-                variations.Add(tile.Value.Rotate(3));
-
-                variations.Add(tile.Value.FlipVertical());
-                variations.Add(tile.Value.FlipVertical().Rotate(1));
-                variations.Add(tile.Value.FlipVertical().Rotate(2));
-                variations.Add(tile.Value.FlipVertical().Rotate(3));
-
-                result.Add(tile.Key, variations);
-            }
-
-            return result;
         }
     }
 }

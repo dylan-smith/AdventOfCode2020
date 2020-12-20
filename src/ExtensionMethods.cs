@@ -716,9 +716,19 @@ namespace AdventOfCode
             return list.Aggregate(1L, (acc, x) => acc * x);
         }
 
+        public static long Multiply<T>(this IEnumerable<T> list, Func<T, long> projection)
+        {
+            return list.Aggregate(1L, (acc, x) => acc * projection(x));
+        }
+
         public static int Multiply(this IEnumerable<int> list)
         {
             return list.Aggregate(1, (acc, x) => acc * x);
+        }
+
+        public static int Multiply<T>(this IEnumerable<T> list, Func<T, int> projection)
+        {
+            return list.Aggregate(1, (acc, x) => acc * projection(x));
         }
 
         public static T WithMin<T>(this IEnumerable<T> a, Func<T, int> selector)
@@ -1293,11 +1303,51 @@ namespace AdventOfCode
             return sb.ToString();
         }
 
+        public static string GetColumn(this char[,] grid, int col)
+        {
+            var sb = new StringBuilder();
+
+            for (var y = 0; y <= grid.GetUpperBound(1); y++)
+            {
+                sb.Append(grid[col, y]);
+            }
+
+            return sb.ToString();
+        }
+
+        public static string GetBottomRow(this char[,] grid)
+        {
+            return grid.GetRow(grid.GetUpperBound(1));
+        }
+
+        public static string GetTopRow(this char[,] grid)
+        {
+            return grid.GetRow(0);
+        }
+
+        public static string GetLeftColumn(this char[,] grid)
+        {
+            return grid.GetColumn(0);
+        }
+
+        public static string GetRightColumn(this char[,] grid)
+        {
+            return grid.GetColumn(grid.GetUpperBound(0));
+        }
+
         public static IEnumerable<string> GetRows(this char[,] grid)
         {
             for (var y = 0; y <= grid.GetUpperBound(1); y++)
             {
                 yield return grid.GetRow(y);
+            }
+        }
+
+        public static IEnumerable<string> GetColumns(this char[,] grid)
+        {
+            for (var x = 0; x <= grid.GetUpperBound(0); x++)
+            {
+                yield return grid.GetColumn(x);
             }
         }
 
@@ -1316,19 +1366,19 @@ namespace AdventOfCode
             return grid[x % grid.Width(), y % grid.Height()];
         }
 
-        public static char[,] Rotate(this char[,] grid, int count)
+        public static char[,] RotateClockwise(this char[,] grid, int count)
         {
             var result = grid;
 
             for (var i = 0; i < count; i++)
             {
-                result = result.Rotate();
+                result = result.RotateClockwise();
             }
 
             return result;
         }
 
-        public static char[,] Rotate(this char[,] grid)
+        public static char[,] RotateClockwise(this char[,] grid)
         {
             var result = new char[grid.Width(), grid.Height()];
 
@@ -1352,6 +1402,21 @@ namespace AdventOfCode
                 for (var x = 0; x < grid.Width(); x++)
                 {
                     result[x, grid.Height() - y - 1] = grid[x, y];
+                }
+            }
+
+            return result;
+        }
+
+        public static char[,] FlipHorizontal(this char[,] grid)
+        {
+            var result = new char[grid.Width(), grid.Height()];
+
+            for (var y = 0; y < grid.Height(); y++)
+            {
+                for (var x = 0; x < grid.Width(); x++)
+                {
+                    result[grid.Width() - x - 1, y] = grid[x, y];
                 }
             }
 
