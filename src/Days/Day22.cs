@@ -83,21 +83,28 @@ namespace AdventOfCode.Days
 
         private (int winner, Queue<int> deck) PlayGame(Queue<int> player1, Queue<int> player2)
         {
-            var seen = new List<(List<int> player1, List<int> player2)>();
+            var seen = new HashSet<string>();
 
             while (player1.Any() && player2.Any())
             {
-                if (seen.Any(s => s.player1.SequenceEqual(player1) && s.player2.SequenceEqual(player2)))
+                var gameString = GameToString(player1, player2);
+
+                if (seen.Contains(gameString))
                 {
                     return (1, player1);
                 }
 
-                seen.Add((player1.ToList(), player2.ToList()));
+                seen.Add(gameString);
 
                 (player1, player2) = PlayRound2(player1, player2);
             }
 
             return player1.Any() ? (1, player1) : (2, player2);
+        }
+
+        private string GameToString(Queue<int> player1, Queue<int> player2)
+        {
+            return $"{ string.Join(',', player1)} - { string.Join(',', player2)}";
         }
 
         private (Queue<int> player1, Queue<int> player2) PlayRound2(Queue<int> player1, Queue<int> player2)
