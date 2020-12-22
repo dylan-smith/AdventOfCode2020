@@ -84,12 +84,10 @@ namespace AdventOfCode.Days
             {
                 var gameString = GameToString(player1, player2);
 
-                if (seen.Contains(gameString))
+                if (!seen.Add(gameString))
                 {
                     return (1, player1);
                 }
-
-                seen.Add(gameString);
 
                 (player1, player2) = PlayRecursiveRound(player1, player2);
             }
