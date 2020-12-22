@@ -78,13 +78,14 @@ namespace AdventOfCode.Days
 
         private (int winner, Queue<int> deck) PlayRecursiveGame(Queue<int> player1, Queue<int> player2)
         {
-            var seen = new HashSet<string>();
-
+            var seen = new HashSet<(HashableList<int>, HashableList<int>)>();
+            
             while (player1.Any() && player2.Any())
             {
-                var gameString = GameToString(player1, player2);
+                var state1 = new HashableList<int>(player1.ToArray());
+                var state2 = new HashableList<int>(player2.ToArray());
 
-                if (!seen.Add(gameString))
+                if (!seen.Add((state1, state2)))
                 {
                     return (1, player1);
                 }
@@ -93,11 +94,6 @@ namespace AdventOfCode.Days
             }
 
             return player1.Any() ? (1, player1) : (2, player2);
-        }
-
-        private string GameToString(Queue<int> player1, Queue<int> player2)
-        {
-            return $"{ string.Join(',', player1)} - { string.Join(',', player2)}";
         }
 
         private (Queue<int> player1, Queue<int> player2) PlayRecursiveRound(Queue<int> player1, Queue<int> player2)
@@ -130,6 +126,41 @@ namespace AdventOfCode.Days
             }
 
             return (player1, player2);
+        }
+    }
+
+    public class GameState
+    {
+        public int[] Player1 { get; set; }
+        public int[] Player2 { get; set; }
+
+        public GameState(Queue<int> player1, Queue<int> player2)
+        {
+            Player1 = player1.ToArray();
+            Player2 = player2.ToArray();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var state = (GameState)obj;
+            return this.Player1.SequenceEqual(state.Player1) && this.Player2.SequenceEqual(state.Player2);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 19;
+                foreach (var x in Player1)
+                {
+                    hash = hash * 31 + x.GetHashCode();
+                }
+                foreach (var x in Player2)
+                {
+                    hash = hash * 31 + x.GetHashCode();
+                }
+                return hash;
+            }
         }
     }
 }
