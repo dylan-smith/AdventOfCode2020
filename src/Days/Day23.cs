@@ -97,14 +97,11 @@ namespace AdventOfCode.Days
         {
             var result = new List<LinkedListNode<int>>(cups.Count + 1);
 
-            for (var i = 0; i < cups.Count + 1; i++)
-            {
-                result.Add(null);
-            }
+            result.Initialize(null, cups.Count + 1);
 
             var cur = cups.First;
 
-            for (var i = 0; i <= cups.Count; i++)
+            for (var i = 0; i < cups.Count; i++)
             {
                 result[cur.Value] = cur;
                 cur = cur.NextCircular();
