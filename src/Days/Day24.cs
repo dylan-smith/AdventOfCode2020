@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace AdventOfCode.Days
@@ -9,8 +8,14 @@ namespace AdventOfCode.Days
     {
         public override string PartOne(string input)
         {
-            var tilePaths = input.ParseLines(x => ParseTilePath(x).ToList()).ToList();
+            var tilePaths = input.ParseLines(x => ParseTilePath(x));
+            var blackTiles = RenovateTiles(tilePaths);
 
+            return blackTiles.Count.ToString();
+        }
+
+        private HashSet<(double x, double y)> RenovateTiles(IEnumerable<IEnumerable<string>> tilePaths)
+        {
             var blackTiles = new HashSet<(double x, double y)>();
 
             foreach (var path in tilePaths)
@@ -27,10 +32,10 @@ namespace AdventOfCode.Days
                 }
             }
 
-            return blackTiles.Count.ToString();
+            return blackTiles;
         }
 
-        private (double x, double y) FollowPath(List<string> path)
+        private (double x, double y) FollowPath(IEnumerable<string> path)
         {
             var pos = (x: 0.0, y: 0.0);
 
@@ -116,23 +121,8 @@ namespace AdventOfCode.Days
 
         public override string PartTwo(string input)
         {
-            var tilePaths = input.ParseLines(x => ParseTilePath(x).ToList()).ToList();
-
-            var blackTiles = new HashSet<(double x, double y)>();
-
-            foreach (var path in tilePaths)
-            {
-                var pos = FollowPath(path);
-
-                if (blackTiles.Contains(pos))
-                {
-                    blackTiles.Remove(pos);
-                }
-                else
-                {
-                    blackTiles.Add(pos);
-                }
-            }
+            var tilePaths = input.ParseLines(x => ParseTilePath(x));
+            var blackTiles = RenovateTiles(tilePaths);
 
             for (var i = 0; i < 100; i++)
             {
@@ -142,11 +132,21 @@ namespace AdventOfCode.Days
             return blackTiles.Count.ToString();
         }
 
+        private IEnumerable<(double x, double y)> GetHexNeighbors((double x, double y) tile)
+        {
+            yield return (tile.x - 1, tile.y);
+            yield return (tile.x + 1, tile.y);
+            yield return (tile.x + 0.5, tile.y + 1);
+            yield return (tile.x - 0.5, tile.y + 1);
+            yield return (tile.x + 0.5, tile.y - 1);
+            yield return (tile.x - 0.5, tile.y - 1);
+        }
+
         private HashSet<(double x, double y)> ProcessDay(HashSet<(double x, double y)> blackTiles)
         {
             var result = new HashSet<(double x, double y)>();
 
-            var allTiles = GetAllTiles(blackTiles).ToList();
+            var allTiles = blackTiles.SelectMany(GetHexNeighbors).Concat(blackTiles);
 
             foreach (var tile in allTiles)
             {
@@ -169,91 +169,16 @@ namespace AdventOfCode.Days
             return result;
         }
 
-        private IEnumerable<(double x, double y)> GetAllTiles(HashSet<(double x, double y)> blackTiles)
-        {
-            foreach (var tile in blackTiles)
-            {
-                yield return tile;
-
-                yield return (tile.x - 1, tile.y);
-                yield return (tile.x + 1, tile.y);
-                yield return (tile.x + 0.5, tile.y + 1);
-                yield return (tile.x - 0.5, tile.y + 1);
-                yield return (tile.x + 0.5, tile.y - 1);
-                yield return (tile.x - 0.5, tile.y - 1);
-            }
-        }
-
         private bool ShouldFlipWhiteTile((double x, double y) tile, HashSet<(double x, double y)> blackTiles)
         {
-            var adjacent = 0;
-
-            if (blackTiles.Contains((tile.x - 1, tile.y)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x + 1, tile.y)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x + 0.5, tile.y + 1)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x - 0.5, tile.y + 1)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x + 0.5, tile.y - 1)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x - 0.5, tile.y - 1)))
-            {
-                adjacent++;
-            }
+            var adjacent = GetHexNeighbors(tile).Count(n => blackTiles.Contains(n));
 
             return adjacent == 2;
         }
 
         private bool ShouldFlipBlackTile((double x, double y) tile, HashSet<(double x, double y)> blackTiles)
         {
-            var adjacent = 0;
-
-            if (blackTiles.Contains((tile.x - 1, tile.y)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x + 1, tile.y)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x + 0.5, tile.y + 1)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x - 0.5, tile.y + 1)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x + 0.5, tile.y - 1)))
-            {
-                adjacent++;
-            }
-
-            if (blackTiles.Contains((tile.x - 0.5, tile.y - 1)))
-            {
-                adjacent++;
-            }
+            var adjacent = GetHexNeighbors(tile).Count(n => blackTiles.Contains(n));
 
             return adjacent == 0 || adjacent > 2;
         }
